@@ -7,6 +7,7 @@
 
 package simulation;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -70,7 +71,7 @@ public class Pasture {
 	/*
 	 *  Determine if a space is already taken by an Entity
 	 */
-	private boolean isOccupied(int row, int col, Entity e) {
+	public boolean isOccupied(int row, int col, Entity e) {
 		if(entities[row][col][1] instanceof Sheep && e instanceof Wolves) {
 			if(!((Animals) e).isPreggers()) {
 				((Animals) e).hasEaten();
@@ -110,6 +111,19 @@ public class Pasture {
 		while (this.isOccupied(row, col, e)) {
 			row = rand.nextInt(NUM_ROWS);
 			col = rand.nextInt(NUM_COLS);
+		}
+
+		//Place Entity in location (row, col)
+		e.setRow(row);
+		e.setCol(col);
+		entities[row][col][1] = e;
+	}
+	
+	public void placeAnimal(Entity e, int row, int col) {
+
+		// Find an empty spot
+		while (this.isOccupied(row, col, e)) {
+			return;
 		}
 
 		//Place Entity in location (row, col)
@@ -224,5 +238,5 @@ public class Pasture {
 		}
 		return a;
 	}
-
+	
 }

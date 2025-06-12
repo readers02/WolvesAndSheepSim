@@ -11,7 +11,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -19,6 +21,7 @@ import javax.swing.Timer;
 
 import entities.Animals;
 import entities.Entity;
+import entities.Fence;
 import entities.Grass;
 
 /*
@@ -50,6 +53,20 @@ public class Simulator extends JPanel implements ActionListener {
 		//Populate a new world
 		this.pasture = new Pasture(NUM_ROWS, NUM_COLS);
 		
+	    
+		addMouseMotionListener(new MouseMotionAdapter(){
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				placeFence(e);
+			}
+		});
+		addMouseListener(new MouseAdapter(){
+			@Override
+			public void mousePressed(MouseEvent e){;
+				placeFence(e);
+			}
+		});
+		
 		//Start the simulation
 		time = new Timer(SPEED, this);
 		time.start();
@@ -65,6 +82,22 @@ public class Simulator extends JPanel implements ActionListener {
 	
 	public int getNUM_ROWS() {
 		return NUM_ROWS;
+	}
+	
+	private void placeFence(MouseEvent e) {
+	    int col = e.getX() / 10;
+	    int row = e.getY() / 10;
+        Fence fence = new Fence(pasture);
+
+	    // Prevent out-of-bounds access
+	    if (row >= 0 && row < NUM_ROWS && col >= 0 && col < NUM_COLS) {	
+	        // Only replace grass tiles
+	        if (!pasture.isOccupied(row, col, fence)) {
+	            fence.setRow(row);
+	            fence.setCol(col);
+	            pasture.placeAnimal(fence, row, col);
+	        }
+	    }
 	}
 	
 	
@@ -109,11 +142,13 @@ public class Simulator extends JPanel implements ActionListener {
 			}
 		}
 
-		//prints the animals to the screen
+		//prints the Entities to the screen
 		for(Entity e:a) {
 			g.setColor(e.getColor());
 			if (e instanceof Animals) {
 				g.fillOval(e.getCol()*10, e.getRow()*10, 10, 10);
+			}else if (e instanceof Fence) {
+				g.fillRect(e.getCol()*10, e.getRow()*10, 10, 10);
 			}
 		}	
 	}
